@@ -1,0 +1,6 @@
+# Placeholder for point cloud preprocessing settings (voxel grid, ground filter, etc.)
+# To be consumed by nodes such as pcl_ros or custom filtering components.
+filters:
+  voxel_leaf_size: 0.05  # TODO: adjust based on MID360 density
+  ground_clip_min: -0.10
+  ground_clip_max: 0.30

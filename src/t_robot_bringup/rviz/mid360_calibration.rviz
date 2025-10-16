@@ -1,0 +1,135 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 160
+      Enabled: true
+      Line Style:
+        Line Width: 0.03
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Description Source: Topic
+      Description Topic: /robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Link Tree Style: Links in Alphabetic Order
+      Name: Robot
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 10
+      Frames:
+        All Enabled: false
+      Marker Scale: 0.2
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        {}
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds: false
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 120
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: MID360 Cloud
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 2
+      Size (m): 0.03
+      Style: Flat Squares
+      Topic: /livox/lidar
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/Axes
+      Enabled: true
+      Length: 0.2
+      Name: MID360 Frame
+      Radius: 0.01
+      Reference Frame: mid360_lidar
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/Measure
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/FrameAligned
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 4
+      Enable Stereo Rendering: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: false
+      Focal Shape Size: 0.05
+      Invert Z Axis: false
+      Name: Orbit
+      Near Clip Distance: 0.01
+      Pitch: 0.785
+      Target Frame: base_link
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 0.785
+    Saved: []
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 780
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd00000004000000000000025800000296fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007300000001e10000009b0000000000000000fb000000120056006900650077007300200054006f006f00000001e10000009b0000000000000000fb000000200054006f006f006c002000500072006f0070006500720074006900650073003200000001e10000009b0000000000000000fb00000012004d006f00640065006c00200054006f006f006c00000001e10000009b0000006400fffffffb0000000a0049006d0061006700650000000166000000ad0000000000000000fb0000000c005200690067006800740000000166000000ad0000000000000000000000010000010f0000025efc0200000008fb0000001c004e0061007600690067006100740069006f006e002000560069006500770000000238000000bc000000b000fffffffb00000016004f0072006200690074002000560069006500770000000238000000bc0000000000000000fb0000001c00540072006500650020005600690065007700200057006900640067006500740000000238000000bc0000010d00fffffffb0000000a0049006d0061006700650000000238000000bc0000000000000000fb0000000c005200690067006800740000000238000000bc0000000000000000fb0000001600540069006d006500200050006c006f007400000002200000013b0000000000000000fb0000000a0050006c006f0074007300000001e10000009b0000000000000000fb0000001a00430061006d0065007200610020004c0069006e006500000002200000010d0000000000000000fb0000000c0052006900670068007400000002b4000000800000000000000000fb0000000a0050006c006f007400730000000238000000bc0000000000000000fb0000000a0050006c006f007400730000000166000000ad0000000000000000fb000000120049006d006100670065002000450064006900740000000166000000ad0000000000000000fb000000160043006f006c006f0072004d0061007000200042006100720000000238000000bc0000009600fffffffb0000000c0043006f006c006f007200730000000238000000bc0000000000000000000000020000011d0000016500ffffffff00000001000000020000000100000002
+  Views:
+    collapsed: false
+  Width: 1200
+  X: 80
+  Y: 60

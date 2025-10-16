@@ -1,0 +1,13 @@
+# Placeholder for twist_mux configuration if velocity command multiplexing is required.
+# Comment out or delete if not needed once architecture is finalized.
+subscribers:
+  - name: navigation
+    topic: /cmd_vel_nav
+    timeout: 0.5
+    priority: 70
+  - name: teleop
+    topic: /cmd_vel_teleop
+    timeout: 0.5
+    priority: 50
+publisher:
+  topic: /cmd_vel

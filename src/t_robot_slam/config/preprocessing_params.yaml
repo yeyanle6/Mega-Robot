@@ -1,0 +1,66 @@
+# Point cloud preprocessing parameters for MID360 LiDAR
+# Optimized for indoor/outdoor navigation and SLAM
+
+pointcloud_preprocessor:
+  ros__parameters:
+    # Topic configuration
+    input_topic: /livox/lidar
+    output_obstacle_topic: /cloud/obstacles
+    output_ground_topic: /cloud/ground
+    output_filtered_topic: /cloud/filtered
+
+    # Frame IDs
+    target_frame: base_link
+    source_frame: mid360_lidar
+
+    # Range filter - remove points too close or too far
+    range_filter:
+      enabled: true
+      min_range: 0.5          # Minimum distance (m) - avoid robot body
+      max_range: 30.0         # Maximum distance (m) - MID360 effective range
+      min_height: -0.3        # Minimum height (m, relative to base_link)
+      max_height: 2.5         # Maximum height (m) - typical ceiling height
+
+    # Voxel grid filter - downsample to reduce computational load
+    voxel_grid:
+      enabled: true
+      leaf_size: 0.05         # Voxel size (m) - 5cm grid
+
+    # Statistical outlier removal - remove noise and flying pixels
+    outlier_removal:
+      enabled: true
+      mean_k: 50              # Number of neighbors for statistics
+      stddev_mul: 1.0         # Standard deviation multiplier
+
+    # Ground segmentation - separate ground from obstacles
+    ground_segmentation:
+      enabled: true
+      method: ransac          # Options: ransac, plane_fit
+
+      # RANSAC plane fitting parameters
+      ransac_max_iterations: 100
+      ransac_distance_threshold: 0.02    # 2cm tolerance
+
+      # Ground plane constraints
+      plane_normal_threshold: 0.1        # Angle tolerance for ground plane
+      expected_ground_height: 0.0        # Expected ground height (m)
+      ground_height_tolerance: 0.1       # Tolerance for ground detection
+
+    # Crop box filter - remove points in specific regions (optional)
+    crop_box:
+      enabled: false
+      min_x: -10.0
+      max_x: 10.0
+      min_y: -10.0
+      max_y: 10.0
+      min_z: -0.5
+      max_z: 3.0
+
+    # Processing options
+    use_sim_time: false
+    publish_rate: 10.0        # Hz - publish frequency (0 = as fast as input)
+    queue_size: 5
+
+    # Debug options
+    verbose: true
+    publish_markers: false    # Publish visualization markers for debugging

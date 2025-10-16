@@ -1,0 +1,102 @@
+# RTAB-Map configuration for MID360 3D LiDAR SLAM
+# Reference: https://github.com/introlab/rtabmap_ros
+
+rtabmap:
+  ros__parameters:
+    use_sim_time: false
+    frame_id: base_link
+    map_frame: map
+    odom_frame: odom
+
+    # Subscription settings
+    subscribe_depth: false
+    subscribe_rgb: false
+    subscribe_scan_cloud: true
+    subscribe_odom_info: false      # 关闭 odom_info（我们没有这个话题）
+    subscribe_user_data: false
+    subscribe_imu: false             # 暂时关闭 IMU（避免同步问题）
+
+    # Synchronization (使用近似同步以容忍时间戳差异)
+    approx_sync: true                # 改为 true 以支持近似时间同步
+    queue_size: 50
+
+    # Input topics
+    odom_topic: /odometry/filtered
+    scan_cloud_topic: /mid360/points_filtered
+    imu_topic: /mid360/imu
+
+    # Database handling
+    database_path: ~/.ros/rtabmap.db
+    delete_db_on_start: false
+
+    # ========== 3D LiDAR-only SLAM Parameters ==========
+
+    # RTAB-Map mode
+    Mem/IncrementalMemory: "true"
+    Mem/InitWMWithAllNodes: "false"
+
+    # ICP (Iterative Closest Point) for 3D point cloud registration
+    Reg/Strategy: "1"              # 0=Visual, 1=ICP, 2=Visual+ICP
+    Reg/Force3DoF: "false"         # Allow full 6DoF (室内可能有坡道/楼梯)
+
+    # ICP parameters for MID360
+    Icp/PointToPlane: "true"       # Point-to-plane ICP (更适合结构化环境)
+    Icp/Iterations: "30"
+    Icp/VoxelSize: "0.05"          # 匹配 pointcloud_preprocessor 的体素大小
+    Icp/MaxCorrespondenceDistance: "0.3"
+    Icp/PM: "true"                 # 使用 libpointmatcher (性能更好)
+    Icp/PMOutlierRatio: "0.7"      # 70% outlier tolerance
+    Icp/CorrespondenceRatio: "0.2" # 至少 20% 点匹配
+
+    # Odometry constraints
+    Odom/Strategy: "0"              # 0=Frame-to-Map, 1=Frame-to-Frame
+    Odom/GuessMotion: "true"        # 使用轮速计里程计作为初始猜测
+    Odom/ScanKeyFrameThr: "0.8"     # 80% 重叠才创建关键帧 (避免冗余)
+
+    # Loop closure detection
+    RGBD/Enabled: "false"           # 禁用 RGB-D (我们只用 LiDAR)
+    RGBD/ProximityBySpace: "true"   # 使用空间距离检测回环
+    RGBD/ProximityMaxGraphDepth: "50"
+    RGBD/ProximityPathMaxNeighbors: "10"
+    RGBD/AngularUpdate: "0.05"      # 旋转 3° 更新
+    RGBD/LinearUpdate: "0.05"       # 平移 5cm 更新
+    RGBD/OptimizeFromGraphEnd: "false"
+
+    # Memory management (Jetson AGX Orin 优化)
+    Mem/ImageKept: "false"          # 不保存图像 (纯 LiDAR)
+    Mem/IntermediateNodeDataKept: "false"
+    Mem/NotLinkedNodesKept: "true"  # 保留未链接节点用于后续回环
+    Mem/STMSize: "30"               # 短期记忆 30 帧
+    Mem/LaserScanNormalK: "10"      # 法向量估计邻域
+
+    # Graph optimization
+    RGBD/OptimizeMaxError: "1.0"    # 优化最大误差 (m)
+    Optimizer/Strategy: "1"          # 0=TORO, 1=g2o, 2=GTSAM
+    Optimizer/Epsilon: "0.0001"
+    Optimizer/Iterations: "100"
+    Optimizer/Robust: "true"         # 鲁棒优化 (处理错误回环)
+
+    # Grid map generation (for Nav2)
+    Grid/FromDepth: "false"          # 从 3D 点云生成 2D 栅格地图
+    Grid/3D: "false"                 # 输出 2D occupancy grid
+    Grid/CellSize: "0.05"            # 5cm 分辨率
+    Grid/RangeMax: "20.0"            # 最大建图距离 20m
+    Grid/RayTracing: "true"          # 射线追踪标记自由空间
+    Grid/ClusterRadius: "0.1"
+    Grid/GroundIsObstacle: "false"   # 地面不是障碍物
+    Grid/MaxObstacleHeight: "2.0"    # 障碍物最大高度
+    Grid/MinGroundHeight: "-0.3"     # 地面最小高度 (容忍不平整)
+    Grid/MaxGroundHeight: "0.05"     # 地面最大高度
+    Grid/NormalsSegmentation: "false"
+
+    # Visualization
+    Rtabmap/PublishRAMUsage: "true"
+    Rtabmap/PublishLikelihood: "true"
+    Rtabmap/PublishPdf: "true"
+
+rtabmapviz:
+  ros__parameters:
+    use_sim_time: false
+    frame_id: base_link
+    subscribe_scan_cloud: true
+    approx_sync: false

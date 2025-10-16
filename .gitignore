@@ -1,0 +1,112 @@
+# ROS 2 Build Artifacts
+build/
+install/
+log/
+
+# Colcon
+.colcon_install_layout
+.colcon_test_results
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+*.egg
+
+# C++
+*.o
+*.lo
+*.la
+*.al
+.libs
+*.so.*
+*.a
+*.dylib
+*.exe
+*.out
+*.app
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!**/CMakeLists.txt
+!**/*.cmake
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ROS Bags
+*.bag
+*.db3
+*.mcap
+
+# RTAB-Map Database
+*.db
+!**/*.yaml
+!**/rtabmap.yaml
+
+# Temporary Files
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+*.patch
+
+# TF Frames Output
+frames*.pdf
+frames*.gv
+
+# Map Exports
+/tmp/rtabmap_export/
+*.pgm
+*.yaml.backup
+
+# Test Outputs
+/tmp/bringup_test.log
+/tmp/mapping_test.log
+/tmp/nav2_test.log
+/tmp/micro_ros_agent.log
+/tmp/slam_recordings/
+
+# RViz Temp Files
+*.rviz~
+*.perspective
+
+# Livox Point Cloud Data
+*.lvx
+*.lvx2
+
+# Documentation Build
+docs/_build/
+site/
+
+# OS Specific
+Thumbs.db
+Desktop.ini
+.Spotlight-V100
+.Trashes
+
+# Project Specific
+# Uncomment if you want to ignore specific local configs
+# local_config.yaml
+# *_local.yaml
+
+# Claude Code
+.claude/

@@ -1,0 +1,25 @@
+# Static TF transforms for T-Robot SLAM system
+# Defines fixed transforms between robot frames and sensors
+
+static_transforms:
+  # MID360 LiDAR mount transform
+  # Mounted on top of the robot chassis
+  - name: mid360_base_transform
+    parent: base_link
+    child: mid360_base
+    translation: [0.0, 0.0, 0.25]  # 25cm above base_link
+    rotation_rpy: [0.0, 0.0, 0.0]  # Level mounting
+
+  # MID360 LiDAR frame (sensor origin)
+  - name: mid360_lidar_transform
+    parent: mid360_base
+    child: mid360_lidar
+    translation: [0.0, 0.0, 0.0]
+    rotation_rpy: [0.0, 0.0, 0.0]
+
+  # MID360 IMU frame
+  - name: mid360_imu_transform
+    parent: mid360_base
+    child: mid360_imu
+    translation: [0.0, 0.0, 0.0]
+    rotation_rpy: [0.0, 0.0, 0.0]

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>t_robot_slam</name>
+  <version>0.1.0</version>
+  <description>SLAM operations package for T-Robot system integrating RTAB-Map with MID360</description>
+  
+  <maintainer email="user@example.com">T-Robot Team</maintainer>
+  <license>MIT</license>
+  
+  <author>T-Robot SLAM Team</author>
+  
+  <!-- Build dependencies -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <!-- Runtime dependencies -->
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_tools</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <!-- Point cloud processing -->
+  <depend>libpcl-all-dev</depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  
+  <!-- Hardware and sensors -->
+  <exec_depend>livox_ros_driver2</exec_depend>
+  <exec_depend>megarover_description</exec_depend>
+  <exec_depend>megarover3_bringup</exec_depend>
+  
+  <!-- Package dependencies -->
+  <exec_depend>t_robot_bringup</exec_depend>
+
+  <!-- SLAM and localization -->
+  <exec_depend>rtabmap_ros</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
+
+  <!-- Navigation -->
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_amcl</exec_depend>
+  <exec_depend>nav2_costmap_2d</exec_depend>
+  <exec_depend>nav2_planner</exec_depend>
+  <exec_depend>nav2_controller</exec_depend>
+  <exec_depend>nav2_behaviors</exec_depend>
+  <exec_depend>nav2_bt_navigator</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+
+  <!-- Data recording and playback -->
+  <exec_depend>rosbag2_cpp</exec_depend>
+  <exec_depend>rosbag2_storage</exec_depend>
+  
+  <!-- Test dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

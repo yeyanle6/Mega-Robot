@@ -1,0 +1,60 @@
+# Livox MID360 LiDAR Driver Configuration
+# For MID360 sensor in direct connection mode
+
+livox_lidar_publisher:
+  ros__parameters:
+    # Frame IDs - must match TF tree
+    frame_id: "mid360_lidar"
+
+    # Publishing control
+    publish_freq: 10.0  # Hz - point cloud publishing frequency
+    output_data_type: 0  # 0: PointCloud2, 1: CustomMsg
+
+    # Multi-topic mode (0: off, 1: on)
+    multi_topic: 0
+
+    # Data source (0: live device, 1: MID file, 2: bag file)
+    data_src: 0
+
+    # Point cloud settings
+    enable_high_sensitivity: false
+
+    # Coordinate transformation
+    # Set to true to apply extrinsic calibration
+    extrinsic_parameter_source: 0  # 0: none, 1: from file
+
+# MID360 specific configuration
+MID360:
+  # LiDAR connection settings
+  lidar_ip: "192.168.1.3"      # MID360 actual IP (verified)
+  lidar_net_info:
+    cmd_data_port: 56000        # Command port
+    push_msg_port: 0            # Push message port (0 = auto)
+    point_data_port: 57000      # Point cloud data port
+    imu_data_port: 58000        # IMU data port
+    log_data_port: 59000        # Log data port
+
+  # Host PC network settings
+  host_net_info:
+    host_ip: "192.168.1.5"      # Host PC IP (actual eno1 IP)
+    multicast_ip: "224.1.1.1"   # Multicast address (if used)
+
+  # IMU settings
+  enable_imu_data: true         # Publish IMU data
+  imu_rate: 200                 # IMU sampling rate (Hz)
+
+  # Point cloud processing
+  point_send_mode: 0            # 0: sphere coords, 1: cartesian
+  pattern_mode: 0               # Scan pattern (0: non-repetitive, 1: repetitive)
+
+  # Blind spot and field of view
+  blind_spot_set: 50            # Minimum detection range (cm)
+
+  # Time synchronization
+  time_sync_mode: 0             # 0: device time, 1: PTP, 2: GPS
+
+  # Logging
+  log_level: 1                  # 0: trace, 1: debug, 2: info, 3: warn, 4: error
+
+  # Performance tuning
+  lidar_type: 8                 # 8 = MID-360
