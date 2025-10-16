@@ -139,18 +139,18 @@ echo ""
 echo "[7/7] Verifying Test Scripts..."
 
 TEST_SCRIPTS=(
-    "test_bringup.sh"
-    "test_mapping.sh"
-    "test_navigation.sh"
+    "scripts/test_bringup.sh"
+    "scripts/test_mapping.sh"
+    "scripts/test_navigation.sh"
 )
 
 for script in "${TEST_SCRIPTS[@]}"; do
     if [ -x "$script" ]; then
-        check_pass "$script (executable)"
+        check_pass "$(basename $script) (executable)"
     elif [ -f "$script" ]; then
-        check_warn "$script (exists but not executable - run: chmod +x $script)"
+        check_warn "$(basename $script) (exists but not executable - run: chmod +x $script)"
     else
-        check_fail "$script (missing)"
+        check_fail "$(basename $script) (missing)"
     fi
 done
 
