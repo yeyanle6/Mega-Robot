@@ -112,7 +112,10 @@ def generate_launch_description() -> LaunchDescription:
         use_mid360_arg,
         mid360_launch,
         lidar_relay,
-        static_tf_mid360_base,
-        static_tf_mid360_lidar,
-        static_tf_mid360_imu,
+        # NOTE: Static TF publishers commented out to avoid conflict with robot_state_publisher
+        # robot_state_publisher already publishes complete TF tree from URDF including 30° tilt
+        # See FIX_TF_CONFLICT.md for details
+        # static_tf_mid360_base,
+        # static_tf_mid360_lidar,
+        # static_tf_mid360_imu,
     ])
