@@ -54,8 +54,32 @@ echo "  - Point cloud preprocessor"
 echo "  - RTAB-Map SLAM"
 echo ""
 
+# Check if database exists and prompt user
+DB_PATH="${HOME}/.ros/rtabmap.db"
+DELETE_DB=${DELETE_DB:-false}
+
+if [ -f "$DB_PATH" ]; then
+  DB_SIZE=$(du -h "$DB_PATH" | cut -f1)
+  echo "ℹ️  已存在 RTAB-Map 数据库: $DB_PATH (大小: $DB_SIZE)"
+  echo "   选择操作:"
+  echo "   - 继续建图 (追加到现有地图): 当前默认"
+  echo "   - 新建地图 (删除旧数据): 设置环境变量 DELETE_DB=true"
+  echo ""
+  if [ "$DELETE_DB" = "true" ]; then
+    echo "⚠️  将删除旧数据库，创建新地图..."
+  else
+    echo "继续使用现有地图..."
+  fi
+else
+  echo "创建新的 RTAB-Map 数据库: $DB_PATH"
+  DELETE_DB=true
+fi
+
 # Launch mapping in background
-ros2 launch t_robot_slam mapping.launch.py launch_bringup:=false > /tmp/mapping_test.log 2>&1 &
+ros2 launch t_robot_slam mapping.launch.py \
+  launch_bringup:=false \
+  delete_db:=$DELETE_DB \
+  > /tmp/mapping_test.log 2>&1 &
 MAPPING_PID=$!
 
 echo "Mapping PID: $MAPPING_PID"
@@ -133,24 +157,29 @@ echo ""
 echo "✅ System is ready for mapping!"
 echo ""
 echo "Next steps:"
-echo "1. Move the robot slowly in the environment"
+echo "1. Move the robot slowly in the environment (< 0.2 m/s)"
+echo "   在新终端运行: ros2 run teleop_twist_keyboard teleop_twist_keyboard"
+echo ""
 echo "2. Monitor RTAB-Map info:"
 echo "   ros2 topic echo /rtabmap/info --once"
 echo ""
 echo "3. Check loop closure detection:"
 echo "   ros2 topic echo /rtabmap/info | grep -i loop"
 echo ""
-echo "4. Monitor odometry drift:"
+echo "4. Monitor SLAM performance:"
 echo "   ros2 run t_robot_slam slam_monitor.py"
 echo ""
-echo "5. Record test data:"
-echo "   ros2 run t_robot_slam mapping_recorder.py --duration 300"
+echo "5. Export map after mapping (在新终端):"
+echo "   ./src/t_robot_slam/scripts/export_rtabmap.py ~/.ros/rtabmap.db -o ./maps/test_map --all"
 echo ""
 echo "Logs:"
 echo "  Bringup: /tmp/bringup_test.log"
 echo "  Mapping: /tmp/mapping_test.log"
 echo ""
+echo "Database: $DB_PATH"
+echo ""
 echo "按 Ctrl+C 停止映射测试，脚本将自动清理相关节点。"
+echo "地图数据已自动保存到数据库中。"
 
 # 保持 mapping 运行，等待用户手动终止
 wait "$MAPPING_PID" 2>/dev/null || true
