@@ -145,7 +145,7 @@ kill $RS_PID
 
 ```bash
 # 步骤1: 启动系统
-./start_navigation.sh
+./scripts/start_navigation.sh
 
 # 在菜单中选择:
 # 模式: 1 (fusion) 或直接回车（使用推荐）
@@ -193,7 +193,7 @@ ros2 topic echo /rtabmap/info --once | grep "loop"
 **适用**: 只有Livox MID360工作
 
 ```bash
-./start_navigation.sh
+./scripts/start_navigation.sh
 # 选择模式: 2 (lidar_only)
 ```
 
@@ -201,7 +201,7 @@ ros2 topic echo /rtabmap/info --once | grep "loop"
 **适用**: 只有RealSense D455工作
 
 ```bash
-./start_navigation.sh
+./scripts/start_navigation.sh
 # 选择模式: 3 (rgbd_only)
 ```
 
@@ -235,7 +235,7 @@ ros2 run nav2_map_server map_saver_cli -f my_test_map
 #### 测试A: 对比测试
 ```bash
 # 终端1: 启动系统（会自动启用融合）
-./start_navigation.sh
+./scripts/start_navigation.sh
 
 # 终端2: 同时监控融合前后的数据
 # 监控轮式里程计
@@ -250,7 +250,7 @@ ros2 topic echo /odom --once
 #### 测试B: 快速转向测试
 ```bash
 # 1. 启动系统
-./start_navigation.sh
+./scripts/start_navigation.sh
 
 # 2. 快速转向机器人（例如原地旋转）
 # 3. 观察融合里程计的平滑度
@@ -297,7 +297,7 @@ ros2 node info /odometry_fusion
 
 ```bash
 # 步骤1: 启动完整系统
-./start_navigation.sh
+./scripts/start_navigation.sh
 # 选择 fusion 模式
 # 启用 RViz
 
@@ -398,17 +398,14 @@ ros2 action send_goal /navigate_through_poses \
 ### 使用方法
 
 ```bash
-# 阶段1: 基础测试
-./test_basic_functions.sh
+# 阶段1: 编译测试
+./scripts/test_build.sh
 
 # 阶段2: SLAM测试（需要手动控制机器人）
-./test_slam_mapping.sh
+./scripts/test_new_lidar_slam.sh
 
-# 阶段3: 里程计融合测试
-./test_odometry_fusion.sh  # 已存在
-
-# 阶段4: 导航测试
-./test_navigation.sh  # 需要已有地图
+# 阶段3: 导航测试（需要已有地图）
+./scripts/test_navigation.sh
 ```
 
 ---

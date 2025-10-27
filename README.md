@@ -16,7 +16,7 @@ source install/setup.bash
 ### 2. 启动SLAM建图
 ```bash
 # 交互式启动(推荐) - 自动检测传感器并选择模式
-./start_navigation.sh
+./scripts/start_navigation.sh
 
 # 或手动指定模式
 ros2 launch megarover_navigation modular_rtabmap.launch.py \
@@ -107,11 +107,14 @@ ros2 topic hz /camera/color/image_raw
 
 ### 验证系统
 ```bash
-# 验证所有修复
-./verify_all_fixes.sh
+# 测试新SLAM系统
+./scripts/test_new_lidar_slam.sh
 
-# 基础功能测试
-./test_basic_functions.sh
+# 测试导航功能
+./scripts/test_navigation.sh
+
+# 测试编译
+./scripts/test_build.sh
 ```
 
 ---
