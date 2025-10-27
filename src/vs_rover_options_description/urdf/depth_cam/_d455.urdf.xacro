@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+
+<!--
+Based on Intel RealSense D435 model, adapted for D455
+D455 specifications: 124mm x 26mm x 29mm
+-->
+
+<robot name="sensor_d455" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Includes -->
+  <xacro:include filename="$(find vs_rover_options_description)/urdf/depth_cam/_d435.gazebo.xacro" />
+
+  <xacro:macro name="sensor_d455" params="parent *origin name:=camera topics_ns:=camera use_nominal_extrinsics:=false use_mesh:=true publish_pointcloud:=true">
+    <xacro:property name="M_PI" value="3.1415926535897931" />
+
+    <!-- D455 specific dimensions -->
+    <xacro:property name="d455_cam_width" value="0.124" />
+    <xacro:property name="d455_cam_height" value="0.026" />
+    <xacro:property name="d455_cam_depth" value="0.029" />
+    <xacro:property name="d455_cam_mount_from_center_offset" value="0.0149" />
+    
+    <!-- Camera frame offsets (similar to D435) -->
+    <xacro:property name="d455_cam_depth_to_infra1_offset" value="0.0" />
+    <xacro:property name="d455_cam_depth_to_infra2_offset" value="-0.050" />
+    <xacro:property name="d455_cam_depth_to_color_offset" value="0.015" />
+    
+    <!-- Glass and depth properties -->
+    <xacro:property name="d455_glass_to_front" value="0.1e-3" />
+    <xacro:property name="d455_zero_depth_to_glass" value="4.2e-3" />
+    <xacro:property name="d455_mesh_x_offset" value="${d455_cam_mount_from_center_offset-d455_glass_to_front-d455_zero_depth_to_glass}" />
+
+    <!-- Physical mount position -->
+    <xacro:property name="d455_cam_depth_px" value="${d455_cam_mount_from_center_offset}" />
+    <xacro:property name="d455_cam_depth_py" value="0.0175" />
+    <xacro:property name="d455_cam_depth_pz" value="${d455_cam_height/2}" />
+
+    <!-- camera body, with origin at bottom screw mount -->
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="${name}_bottom_screw_frame" />
+    </joint>
+    <link name="${name}_bottom_screw_frame" />
+
+    <joint name="${name}_link_joint" type="fixed">
+      <origin xyz="${d455_mesh_x_offset} ${d455_cam_depth_py} ${d455_cam_depth_pz}" rpy="0 0 0" />
+      <parent link="${name}_bottom_screw_frame" />
+      <child link="${name}_link" />
+    </joint>
+
+    <link name="${name}_link">
+      <visual>
+        <xacro:if value="${use_mesh}">
+          <origin xyz="${d455_zero_depth_to_glass + d455_glass_to_front} ${-d455_cam_depth_py} 0" rpy="${M_PI/2} 0 ${M_PI/2}" />
+          <geometry>
+            <!-- Use D435 mesh as placeholder for D455 -->
+            <mesh filename="package://vs_rover_options_description/meshes/depth_cam/d435.dae" />
+          </geometry>
+        </xacro:if>
+        <xacro:unless value="${use_mesh}">
+          <origin xyz="0 ${-d455_cam_depth_py} 0" rpy="0 0 0" />
+          <geometry>
+            <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}" />
+          </geometry>
+        </xacro:unless>
+        <material name="dark_silver" />
+      </visual>
+      <collision>
+        <origin xyz="0 ${-d455_cam_depth_py} 0" rpy="0 0 0" />
+        <geometry>
+          <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}" />
+        </geometry>
+      </collision>
+      <inertial>
+        <!-- D455 mass is approximately 0.095 kg -->
+        <mass value="0.095" />
+        <origin xyz="${-d455_mesh_x_offset} ${-d455_cam_depth_py} 0" />
+        <inertia ixx="0.000055" iyy="0.000008" izz="0.000055" ixy="0.0" iyz="0.0" ixz="0.0" />
+      </inertial>
+    </link>
+
+    <!-- Use the nominal extrinsics between camera frames if the calibrated extrinsics aren't being published -->
+    <xacro:if value="${use_nominal_extrinsics}">
+      <!-- camera depth joints and links -->
+      <joint name="${name}_depth_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="${name}_link" />
+        <child link="${name}_depth_frame" />
+      </joint>
+      <link name="${name}_depth_frame" />
+
+      <joint name="${name}_depth_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+        <parent link="${name}_depth_frame" />
+        <child link="${name}_depth_optical_frame" />
+      </joint>
+      <link name="${name}_depth_optical_frame" />
+
+      <!-- camera left IR joints and links -->
+      <joint name="${name}_infra1_joint" type="fixed">
+        <origin xyz="0 ${d455_cam_depth_to_infra1_offset} 0" rpy="0 0 0" />
+        <parent link="${name}_link" />
+        <child link="${name}_infra1_frame" />
+      </joint>
+      <link name="${name}_infra1_frame" />
+
+      <joint name="${name}_infra1_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+        <parent link="${name}_infra1_frame" />
+        <child link="${name}_infra1_optical_frame" />
+      </joint>
+      <link name="${name}_infra1_optical_frame" />
+
+      <!-- camera right IR joints and links -->
+      <joint name="${name}_infra2_joint" type="fixed">
+        <origin xyz="0 ${d455_cam_depth_to_infra2_offset} 0" rpy="0 0 0" />
+        <parent link="${name}_link" />
+        <child link="${name}_infra2_frame" />
+      </joint>
+      <link name="${name}_infra2_frame" />
+
+      <joint name="${name}_infra2_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+        <parent link="${name}_infra2_frame" />
+        <child link="${name}_infra2_optical_frame" />
+      </joint>
+      <link name="${name}_infra2_optical_frame" />
+
+      <!-- camera color joints and links -->
+      <joint name="${name}_color_joint" type="fixed">
+        <origin xyz="0 ${d455_cam_depth_to_color_offset} 0" rpy="0 0 0" />
+        <parent link="${name}_link" />
+        <child link="${name}_color_frame" />
+      </joint>
+      <link name="${name}_color_frame" />
+
+      <joint name="${name}_color_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+        <parent link="${name}_color_frame" />
+        <child link="${name}_color_optical_frame" />
+      </joint>
+      <link name="${name}_color_optical_frame" />
+    </xacro:if>
+
+    <!-- Realsense Gazebo Plugin -->
+    <xacro:gazebo_d435 camera_name="${name}" reference_link="${name}_link" topics_ns="${topics_ns}" depth_optical_frame="${name}_depth_optical_frame" color_optical_frame="${name}_color_optical_frame" infrared1_optical_frame="${name}_infra1_ir_optical_frame" infrared2_optical_frame="${name}_infra2_ir_optical_frame" publish_pointcloud="${publish_pointcloud}" />
+  </xacro:macro>
+</robot>

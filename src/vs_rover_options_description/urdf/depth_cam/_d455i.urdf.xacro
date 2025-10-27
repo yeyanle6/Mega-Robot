@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+D455i with IMU modules
+-->
+
+<robot name="sensor_d455i" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find vs_rover_options_description)/urdf/depth_cam/_d455.urdf.xacro" />
+  <xacro:include filename="$(find vs_rover_options_description)/urdf/depth_cam/_d435i_imu_modules.urdf.xacro" />
+
+  <xacro:macro name="sensor_d455i" params="parent *origin name:=camera use_nominal_extrinsics:=false">
+    <xacro:sensor_d455 parent="${parent}" name="${name}" use_nominal_extrinsics="${use_nominal_extrinsics}">
+      <xacro:insert_block name="origin" />
+    </xacro:sensor_d455>
+    <xacro:d435i_imu_modules name="${name}" use_nominal_extrinsics="${use_nominal_extrinsics}" />
+  </xacro:macro>
+</robot>
