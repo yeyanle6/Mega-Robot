@@ -1,0 +1,206 @@
+# RTABMAP Configuration for MegaRover3 with MID360 and D455i
+# This file contains optimized parameters for indoor/outdoor mapping
+
+rtabmap:
+  ros__parameters:
+    # Frame IDs
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    map_frame_id: "map"
+    publish_tf: true
+    tf_delay: 0.02
+
+    # Subscription configuration
+    subscribe_depth: true
+    subscribe_rgb: true
+    subscribe_scan_cloud: true
+    subscribe_odom_info: false
+    approx_sync: false  # Set to true if sensor timestamps are not synchronized
+
+    # Input topics
+    rgb_topic: "/camera/color/image_raw"
+    depth_topic: "/camera/aligned_depth_to_color/image_raw"
+    camera_info_topic: "/camera/color/camera_info"
+    scan_cloud_topic: "/livox/lidar"
+    odom_topic: "/odom"
+    imu_topic: "/livox/imu"
+
+    # Queue and synchronization
+    queue_size: 10
+    sync_queue_size: 10
+    topic_queue_size: 10
+
+    # QoS settings (0=default, 1=reliable, 2=best effort)
+    qos: 1
+    qos_image: 1
+    qos_camera_info: 1
+    qos_scan: 1
+    qos_odom: 1
+    qos_user_data: 0
+    qos_imu: 1
+
+    # Database
+    database_path: "~/.ros/rtabmap.db"
+
+    # RTABMAP Core Parameters
+    # ========================
+
+    # Loop closure detection
+    Rtabmap/DetectionRate: "1"          # Hz, 0=no limit
+    Rtabmap/ImageBufferSize: "1"        # Process all images
+    Rtabmap/CreateIntermediateNodes: "true"
+    Rtabmap/MaxRetrieved: "2"           # Maximum nodes retrieved for loop closure
+    Rtabmap/MemoryThr: "0"              # Working memory size (0=infinite)
+    Rtabmap/LoopThr: "0.11"             # Loop closure threshold
+    Rtabmap/LoopRatio: "0.7"            # Loop closure ratio
+
+    # Graph optimization
+    Rtabmap/TimeThr: "0"                # Time threshold for new nodes (0=disabled)
+    Rtabmap/StartNewMapOnLoopClosure: "false"
+    Rtabmap/StartNewMapOnGoodSignature: "false"
+
+    # Visual Features
+    # ===============
+    Vis/EstimationType: "1"             # 0=3D->3D, 1=3D->2D (PnP)
+    Vis/FeatureType: "6"                 # 0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF
+    Vis/MaxFeatures: "1000"              # Maximum features per image
+    Vis/MinInliers: "10"                 # Minimum inliers for valid transformation
+    Vis/InlierDistance: "0.1"            # Maximum distance for inliers
+    Vis/CorType: "0"                     # Correspondences: 0=Features, 1=OpticalFlow
+    Vis/CorGuessWinSize: "20"            # Guess window size for correspondences
+
+    # Registration (Motion Estimation)
+    # =================================
+    Reg/Strategy: "1"                    # 0=Visual, 1=ICP, 2=Visual+ICP
+    Reg/Force3DoF: "true"                # Force 3DoF transform (for ground robots)
+
+    # ICP Parameters (for LiDAR)
+    # ==========================
+    Icp/Strategy: "1"                    # 0=point to point, 1=point to plane
+    Icp/MaxCorrespondenceDistance: "0.1" # Maximum distance for correspondences
+    Icp/Iterations: "30"                 # Maximum ICP iterations
+    Icp/VoxelSize: "0.05"                # Voxel size for downsampling
+    Icp/Epsilon: "0.001"                 # Convergence threshold
+    Icp/PointToPlane: "true"             # Use point-to-plane ICP
+    Icp/PointToPlaneK: "20"              # K nearest neighbors for normals
+    Icp/PointToPlaneRadius: "0.3"        # Radius for normals computation
+    Icp/MaxTranslation: "2.0"            # Maximum translation between scans
+    Icp/MaxRotation: "0.78"              # Maximum rotation between scans (rad)
+
+    # Grid Map Generation
+    # ===================
+    Grid/3D: "false"                     # 2D occupancy grid
+    Grid/RayTracing: "true"              # Ray tracing for occupancy grid
+    Grid/RangeMin: "0.2"                 # Minimum range for grid generation
+    Grid/RangeMax: "20.0"                # Maximum range for grid generation
+    Grid/CellSize: "0.05"                # Grid cell size (m)
+    Grid/PreVoxelFiltering: "true"       # Pre-filter input clouds
+    Grid/MapFrameProjection: "false"     # Project in map frame
+    Grid/NormalsSegmentation: "false"    # Segment ground/obstacles
+    Grid/MaxGroundHeight: "0.0"          # Maximum ground height
+    Grid/MaxObstacleHeight: "2.0"        # Maximum obstacle height
+    Grid/MinClusterSize: "10"            # Minimum cluster size
+    Grid/FlatObstacleDetected: "true"    # Detect flat obstacles
+    Grid/NoiseFilteringRadius: "0.1"     # Noise filtering radius
+    Grid/NoiseFilteringMinNeighbors: "5" # Minimum neighbors for noise filtering
+    Grid/FromDepth: "false"              # Generate from depth image (false=use laser)
+
+    # Memory Management
+    # =================
+    Mem/RehearsalSimilarity: "0.45"      # Rehearsal similarity threshold
+    Mem/UseOdomFeatures: "false"         # Use features from odometry
+    Mem/NotLinkedNodesKept: "false"      # Keep not linked nodes in memory
+    Mem/STMSize: "30"                    # Short-term memory size
+    Mem/IncrementalMemory: "true"        # Incremental SLAM
+    Mem/InitWMWithAllNodes: "false"      # Initialize with all nodes
+    Mem/RehearsalIdUpdatedToNewOne: "false"
+    Mem/GenerateIds: "true"              # Generate IDs
+
+    # Optimization
+    # ============
+    Optimizer/Strategy: "0"               # 0=TORO, 1=g2o, 2=GTSAM
+    Optimizer/Iterations: "100"           # Optimization iterations
+    Optimizer/Epsilon: "0.00001"          # Optimization convergence threshold
+    Optimizer/VarianceIgnored: "false"    # Ignore variance in optimization
+    Optimizer/Robust: "false"             # Use robust optimization
+
+    # RGB-D Parameters
+    # ================
+    RGBD/AngularUpdate: "0.01"           # Minimum angular displacement (rad)
+    RGBD/LinearUpdate: "0.01"            # Minimum linear displacement (m)
+    RGBD/OptimizeFromGraphEnd: "false"   # Optimize from graph end
+    RGBD/OptimizeMaxError: "3.0"         # Maximum optimization error
+    RGBD/ProximityBySpace: "true"        # Proximity detection by space
+    RGBD/ProximityByTime: "false"        # Proximity detection by time
+    RGBD/ProximityMaxGraphDepth: "50"    # Maximum graph depth for proximity
+    RGBD/ProximityMaxPaths: "3"          # Maximum paths for proximity
+    RGBD/ProximityPathMaxNeighbors: "0"  # Maximum neighbors in path
+    RGBD/LocalRadius: "5.0"              # Local radius for proximity detection
+    RGBD/NeighborLinkRefining: "true"    # Refine neighbor links
+    RGBD/CreateOccupancyGrid: "true"     # Create occupancy grid
+
+    # Odometry Parameters (if using visual odometry)
+    # ==============================================
+    Odom/Strategy: "1"                   # 0=Frame-to-Map, 1=Frame-to-Frame
+    Odom/ResetCountdown: "0"             # Frames before reset
+    Odom/Holonomic: "false"              # Non-holonomic robot
+    Odom/FilteringStrategy: "0"          # 0=No filtering, 1=Kalman, 2=Particle
+    Odom/GuessMotion: "true"             # Guess motion from previous
+    Odom/KeyFrameThr: "0.3"              # Key frame threshold
+    Odom/ScanKeyFrameThr: "0.9"          # Scan key frame threshold
+
+    # Stereo Parameters (if using stereo camera)
+    # ==========================================
+    Stereo/MaxDisparity: "128"           # Maximum disparity
+    Stereo/MinDisparity: "0"             # Minimum disparity
+    Stereo/OpticalFlow: "false"          # Use optical flow
+    Stereo/SSD: "true"                   # Use SSD for matching
+    Stereo/Eps: "0.01"                   # Epsilon for stereo
+
+    # Advanced Features
+    # =================
+    Rtabmap/PublishRAMUsage: "false"     # Publish RAM usage
+    Rtabmap/PublishStats: "true"         # Publish statistics
+    Rtabmap/PublishLastSignature: "true" # Publish last signature
+    Rtabmap/PublishPdf: "true"           # Publish probability distribution
+    Rtabmap/PublishLikelihood: "true"    # Publish likelihood
+
+# Visual Odometry Node Configuration (optional)
+rgbd_odometry:
+  ros__parameters:
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    publish_tf: true
+
+    # Use same visual parameters as RTABMAP
+    Vis/EstimationType: "1"
+    Vis/FeatureType: "6"
+    Vis/MaxFeatures: "1000"
+    Vis/MinInliers: "10"
+
+    # Odometry specific
+    Odom/Strategy: "0"
+    Odom/ResetCountdown: "0"
+    Odom/Holonomic: "false"
+    Odom/FilteringStrategy: "0"
+    Odom/GuessMotion: "true"
+    Odom/KeyFrameThr: "0.3"
+
+# ICP Odometry Node Configuration (optional)
+icp_odometry:
+  ros__parameters:
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    publish_tf: true
+
+    # ICP parameters
+    Icp/Strategy: "1"
+    Icp/MaxCorrespondenceDistance: "0.1"
+    Icp/Iterations: "30"
+    Icp/VoxelSize: "0.05"
+    Icp/PointToPlane: "true"
+
+    # Odometry specific
+    Odom/Strategy: "0"
+    Odom/ScanKeyFrameThr: "0.9"
+    Odom/Holonomic: "false"

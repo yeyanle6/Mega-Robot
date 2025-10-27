@@ -1,0 +1,135 @@
+# RTABMAP配置 - 仅使用RGB-D相机模式
+# 优化用于Intel RealSense D455i
+
+rtabmap:
+  ros__parameters:
+    # 基础配置
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    map_frame_id: "map"
+    publish_tf: true
+    tf_delay: 0.02
+    use_sim_time: false
+
+    # 订阅配置 - 仅RGB-D
+    subscribe_depth: true
+    subscribe_rgb: true
+    subscribe_scan: false
+    subscribe_scan_cloud: false
+    subscribe_stereo: false
+    subscribe_rgbd: false
+    subscribe_odom_info: false
+    approx_sync: false
+
+    # 话题配置
+    rgb_topic: "/camera/color/image_raw"
+    depth_topic: "/camera/aligned_depth_to_color/image_raw"
+    camera_info_topic: "/camera/color/camera_info"
+    odom_topic: "/odom"
+    imu_topic: "/camera/imu"
+
+    # 队列大小
+    queue_size: 10
+    sync_queue_size: 10
+
+    # QoS设置
+    qos: 1
+    qos_image: 1
+    qos_camera_info: 1
+    qos_odom: 1
+    qos_imu: 1
+
+    # RTABMAP核心参数 - 针对RGB-D优化
+    Rtabmap/DetectionRate: "1.0"
+    Rtabmap/CreateIntermediateNodes: "true"
+    Rtabmap/MaxRetrieved: "2"
+    Rtabmap/MemoryThr: "0"
+    Rtabmap/LoopThr: "0.11"
+
+    # 使用视觉特征进行注册
+    Reg/Strategy: "0"                    # 0=Visual
+    Reg/Force3DoF: "true"                # 地面机器人约束
+
+    # 视觉特征参数 - 针对D455i优化
+    Vis/EstimationType: "1"              # 3D->2D (PnP)
+    Vis/FeatureType: "6"                 # GFTT/BRIEF
+    Vis/MaxFeatures: "1000"
+    Vis/MinInliers: "12"                 # 稍高的内点要求
+    Vis/InlierDistance: "0.1"
+    Vis/CorType: "0"                     # Features
+    Vis/CorGuessWinSize: "20"
+    Vis/DepthAsMask: "true"              # 使用深度作为掩码
+    Vis/MinDepth: "0.3"                  # D455i最小深度
+    Vis/MaxDepth: "10.0"                 # 室内有效深度范围
+
+    # RGB-D参数
+    RGBD/AngularUpdate: "0.01"
+    RGBD/LinearUpdate: "0.01"
+    RGBD/OptimizeFromGraphEnd: "false"
+    RGBD/OptimizeMaxError: "3.0"
+    RGBD/ProximityBySpace: "true"
+    RGBD/ProximityByTime: "false"
+    RGBD/ProximityMaxGraphDepth: "50"
+    RGBD/ProximityMaxPaths: "3"
+    RGBD/LocalRadius: "5.0"
+    RGBD/NeighborLinkRefining: "true"
+    RGBD/CreateOccupancyGrid: "true"
+    RGBD/MarkerDetection: "false"
+
+    # 深度图像处理
+    StereoBM/BlockSize: "15"
+    StereoBM/MinDisparity: "0"
+    StereoBM/NumDisparities: "128"
+    StereoBM/PreFilterSize: "9"
+    StereoBM/PreFilterCap: "31"
+    StereoBM/UniquenessRatio: "15"
+    StereoBM/TextureThreshold: "10"
+    StereoBM/SpeckleWindowSize: "100"
+    StereoBM/SpeckleRange: "4"
+
+    # 栅格地图生成 - 从深度图像
+    Grid/3D: "false"
+    Grid/RayTracing: "true"
+    Grid/RangeMin: "0.3"
+    Grid/RangeMax: "6.0"                # D455i有效范围
+    Grid/CellSize: "0.05"
+    Grid/PreVoxelFiltering: "true"
+    Grid/MapFrameProjection: "false"
+    Grid/NormalsSegmentation: "true"
+    Grid/MaxGroundHeight: "0.0"
+    Grid/MaxObstacleHeight: "2.0"
+    Grid/MinClusterSize: "10"
+    Grid/FlatObstacleDetected: "true"
+    Grid/NoiseFilteringRadius: "0.1"
+    Grid/NoiseFilteringMinNeighbors: "5"
+    Grid/FromDepth: "true"               # 从深度图生成
+
+    # 内存管理
+    Mem/RehearsalSimilarity: "0.45"
+    Mem/UseOdomFeatures: "true"         # 使用视觉里程计特征
+    Mem/NotLinkedNodesKept: "false"
+    Mem/STMSize: "30"
+    Mem/IncrementalMemory: "true"
+    Mem/ImagePreDecimation: "1"         # 不降采样图像
+    Mem/ImagePostDecimation: "1"
+
+    # 优化器
+    Optimizer/Strategy: "1"               # g2o
+    Optimizer/Iterations: "100"
+    Optimizer/Epsilon: "0.00001"
+    Optimizer/Robust: "false"
+
+    # 里程计参数
+    Odom/Strategy: "0"                   # Frame-to-Map
+    Odom/ResetCountdown: "0"
+    Odom/Holonomic: "false"
+    Odom/FilteringStrategy: "0"
+    Odom/GuessMotion: "true"
+    Odom/KeyFrameThr: "0.3"
+    Odom/ImageDecimation: "1"
+
+    # 发布选项
+    Rtabmap/PublishStats: "true"
+    Rtabmap/PublishLastSignature: "true"
+    Rtabmap/PublishPdf: "false"
+    Rtabmap/PublishLikelihood: "false"

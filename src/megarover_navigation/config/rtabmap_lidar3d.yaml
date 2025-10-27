@@ -1,0 +1,165 @@
+# RTABMAP LiDAR SLAM配置文件 (官方架构重构版)
+#
+# 基于官方lidar3d.launch.py推荐参数
+# 适配硬件: Livox Mid-360 (非重复扫描)
+#
+# 核心改进:
+# ✅ 正确的frame_id (mid360_lidar)
+# ✅ 正确的ICP参数 (MaxCorrespondenceDistance = 1.0)
+# ✅ 移除RGBD相关参数 (LiDAR only)
+# ✅ 优化的内存和优化器设置
+
+rtabmap:
+  ros__parameters:
+    # ========================================
+    # 基础配置
+    # ========================================
+    frame_id: "mid360_lidar"  # ✅ 激光雷达frame (而非base_link)
+    odom_frame_id: "icp_odom"  # ICP里程计frame
+    map_frame_id: "rtabmap_map"  # ✅ 避免与其他SLAM冲突
+    publish_tf: true
+    tf_delay: 0.02  # TF延迟 (秒)
+    use_sim_time: false
+
+    # ========================================
+    # 订阅配置 - LiDAR Only模式
+    # ========================================
+    subscribe_depth: false  # 不使用深度图
+    subscribe_rgb: false  # 不使用RGB图像
+    subscribe_scan: false  # 不使用2D激光
+    subscribe_scan_cloud: true  # ✅ 订阅3D点云
+    subscribe_stereo: false  # 不使用立体相机
+    subscribe_rgbd: false  # 不使用RGBD
+    subscribe_odom_info: true  # ✅ 订阅里程计信息（来自icp_odometry）
+    approx_sync: false  # LiDAR only不需要近似同步
+
+    # ========================================
+    # 队列和QoS配置
+    # ========================================
+    queue_size: 10
+    sync_queue_size: 10
+    qos: 1  # 可靠传输
+    qos_scan: 1
+    qos_odom: 1
+    qos_imu: 1
+
+    # ========================================
+    # RTABMAP核心参数
+    # ========================================
+    Rtabmap/DetectionRate: "1.0"  # 回环检测频率 (Hz)
+    Rtabmap/CreateIntermediateNodes: "true"  # 创建中间节点
+    Rtabmap/MaxRetrieved: "2"  # 最大检索节点数
+    Rtabmap/MemoryThr: "0"  # 内存阈值 (0=禁用)
+    Rtabmap/LoopThr: "0.11"  # 回环检测阈值
+
+    # ========================================
+    # 配准策略 (Registration)
+    # ========================================
+    Reg/Strategy: "1"  # 1=ICP (激光雷达)
+    Reg/Force3DoF: "true"  # ✅ 地面机器人强制3自由度
+
+    # ========================================
+    # ICP参数 (官方推荐值)
+    # ========================================
+    Icp/Strategy: "1"  # Point-to-plane ICP
+    Icp/MaxCorrespondenceDistance: "1.0"  # ✅ voxel_size * 10.0 = 1.0
+    Icp/Iterations: "10"  # ✅ 官方推荐10次迭代
+    Icp/VoxelSize: "0.1"  # 体素大小 (米)，室内环境
+    Icp/Epsilon: "0.001"  # 收敛阈值
+    Icp/PointToPlane: "true"  # 点到平面ICP
+    Icp/PointToPlaneK: "20"  # K近邻数
+    Icp/PointToPlaneRadius: "0"  # 半径搜索 (0=使用K)
+    Icp/MaxTranslation: "3"  # 最大平移 (米)
+    Icp/MaxRotation: "0.78"  # 最大旋转 (弧度, ~45度)
+    Icp/OutlierRatio: "0.7"  # ✅ 外点比例 0.7 (官方推荐)
+    Icp/CorrespondenceRatio: "0.2"  # 回环检测对应点比例 (0.2=20%)
+
+    # ========================================
+    # 视觉特征 (LiDAR only模式禁用)
+    # ========================================
+    Vis/EstimationType: "1"  # 禁用视觉估计
+    Vis/MaxFeatures: "0"  # 不提取视觉特征
+
+    # ========================================
+    # 栅格地图生成 (从LiDAR)
+    # ========================================
+    Grid/3D: "false"  # 生成2D栅格地图
+    Grid/RayTracing: "true"  # 使用射线追踪
+    Grid/RangeMin: "0.3"  # 最小范围 (米)
+    Grid/RangeMax: "30.0"  # 最大范围 (米)，Mid-360范围
+    Grid/CellSize: "0.05"  # 栅格单元大小 (米)
+    Grid/PreVoxelFiltering: "true"  # 预处理体素滤波
+    Grid/MapFrameProjection: "false"  # 不投影到map frame
+    Grid/NormalsSegmentation: "true"  # 法向量分割
+    Grid/MaxGroundHeight: "0.1"  # 最大地面高度 (米)
+    Grid/MaxObstacleHeight: "2.0"  # 最大障碍物高度 (米)
+    Grid/MinClusterSize: "20"  # 最小聚类大小
+    Grid/FlatObstacleDetected: "true"  # 检测平面障碍物
+    Grid/NoiseFilteringRadius: "0.1"  # 噪声滤波半径
+    Grid/NoiseFilteringMinNeighbors: "5"  # 噪声滤波最小邻居数
+    Grid/FromDepth: "false"  # ✅ 使用点云而非深度图
+
+    # ========================================
+    # 内存管理
+    # ========================================
+    Mem/RehearsalSimilarity: "0.45"  # 相似度阈值
+    Mem/UseOdomFeatures: "false"  # 不使用里程计特征
+    Mem/NotLinkedNodesKept: "false"  # ✅ 官方推荐：不保留未链接节点
+    Mem/STMSize: "30"  # ✅ 短期记忆大小
+    Mem/IncrementalMemory: "true"  # 增量建图模式 (定位模式需改为false)
+
+    # ========================================
+    # 优化器 (SLAM后端)
+    # ========================================
+    Optimizer/Strategy: "1"  # 1=g2o优化器
+    Optimizer/Iterations: "100"  # 优化迭代次数
+    Optimizer/Epsilon: "0.00001"  # 收敛阈值
+    Optimizer/Robust: "true"  # 鲁棒优化 (抵抗外点)
+
+    # ========================================
+    # 里程计参数 (由icp_odometry提供，此处供参考)
+    # ========================================
+    Odom/Strategy: "1"  # Frame-to-Frame
+    Odom/ResetCountdown: "0"  # 里程计重置倒计时
+    Odom/Holonomic: "false"  # 非全向移动
+    Odom/FilteringStrategy: "0"  # 滤波策略
+    Odom/GuessMotion: "true"  # 运动预测
+    Odom/ScanKeyFrameThr: "0.4"  # ✅ 关键帧阈值
+
+    # ========================================
+    # RGBD参数 (官方lidar3d.launch.py设置)
+    # ========================================
+    RGBD/ProximityMaxGraphDepth: "0"
+    RGBD/ProximityPathMaxNeighbors: "1"
+    RGBD/AngularUpdate: "0.05"  # 角度更新阈值 (弧度)
+    RGBD/LinearUpdate: "0.05"  # 线性更新阈值 (米)
+    RGBD/CreateOccupancyGrid: "false"  # 不在rtabmap创建栅格地图
+
+    # ========================================
+    # 发布选项
+    # ========================================
+    Rtabmap/PublishStats: "true"  # 发布统计信息
+    Rtabmap/PublishLastSignature: "false"  # 不发布最后签名
+    Rtabmap/PublishPdf: "false"  # 不发布PDF
+    Rtabmap/PublishLikelihood: "false"  # 不发布似然度
+
+# ========================================
+# ICP Odometry节点配置 (供参考，实际由launch文件设置)
+# ========================================
+icp_odometry:
+  ros__parameters:
+    frame_id: "mid360_lidar"
+    odom_frame_id: "icp_odom"
+    expected_update_rate: 15.0  # 期望更新频率 (Hz)
+    wait_for_transform: 0.2
+
+    # ICP参数 (与rtabmap共享)
+    Icp/VoxelSize: "0.1"
+    Icp/MaxCorrespondenceDistance: "1.0"
+    Icp/CorrespondenceRatio: "0.01"  # 里程计要求更低
+
+    # 里程计特定参数
+    Odom/ScanKeyFrameThr: "0.4"
+    OdomF2M/ScanSubtractRadius: "0.1"
+    OdomF2M/ScanMaxSize: "15000"
+    OdomF2M/BundleAdjustment: "false"

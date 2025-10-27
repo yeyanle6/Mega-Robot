@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>megarover_navigation</name>
+  <version>1.0.0</version>
+  <description>MegaRover3 modular navigation system with RTABMAP SLAM and Nav2</description>
+  <maintainer email="wang@megarover.com">Wang</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- Python dependencies -->
+  <depend>rclpy</depend>
+  <depend>python3-yaml</depend>
+  <depend>python3-psutil</depend>
+  <depend>python3-numpy</depend>
+
+  <!-- Message generation -->
+  <build_depend>rosidl_default_generators</build_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <!-- Navigation stack -->
+  <depend>nav2_bringup</depend>
+  <depend>nav2_common</depend>
+  <depend>nav2_msgs</depend>
+  <depend>nav2_bt_navigator</depend>
+  <depend>nav2_controller</depend>
+  <depend>nav2_planner</depend>
+  <depend>nav2_behaviors</depend>
+  <depend>nav2_waypoint_follower</depend>
+  <depend>nav2_lifecycle_manager</depend>
+  <depend>nav2_costmap_2d</depend>
+  <depend>nav2_amcl</depend>
+  <depend>nav2_map_server</depend>
+  <depend>nav2_velocity_smoother</depend>
+  <depend>nav2_rviz_plugins</depend>
+
+  <!-- SLAM -->
+  <depend>rtabmap_ros</depend>
+  <depend>rtabmap_slam</depend>
+  <depend>rtabmap_sync</depend>
+
+  <!-- Sensors -->
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>diagnostic_msgs</depend>
+
+  <!-- TF and utilities -->
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>pointcloud_to_laserscan</depend>
+  <depend>robot_state_publisher</depend>
+
+  <!-- Robot specific -->
+  <depend>megarover3_bringup</depend>
+  <depend>megarover_description</depend>
+  <depend>livox_ros_driver2</depend>
+  <depend>realsense2_camera</depend>
+
+  <!-- Launch dependencies -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>launch_xml</exec_depend>
+
+  <!-- Testing -->
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

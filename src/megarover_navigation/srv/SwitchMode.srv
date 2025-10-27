@@ -1,0 +1,12 @@
+# 切换SLAM模式服务（简洁版）
+
+# 请求
+string target_mode          # "fusion", "lidar_only", "rgbd_only", "odom_only"
+bool force_switch           # 是否强制切换
+
+---
+
+# 响应
+bool success                # 是否成功
+string current_mode         # 当前运行模式
+string message              # 详细信息

@@ -1,0 +1,171 @@
+# RTABMAP配置 - 传感器融合模式
+# 同时使用Livox MID360和Intel RealSense D455i
+
+rtabmap:
+  ros__parameters:
+    # 基础配置
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    map_frame_id: "map"
+    publish_tf: true
+    tf_delay: 0.02
+    use_sim_time: false
+
+    # 订阅配置 - RGB-D + 激光雷达
+    subscribe_depth: true
+    subscribe_rgb: true
+    subscribe_scan: false
+    subscribe_scan_cloud: true
+    subscribe_stereo: false
+    subscribe_rgbd: false
+    subscribe_odom_info: false
+    approx_sync: true                    # 允许时间同步偏差
+
+    # 话题配置 (由launch文件的remappings管理，此处不设置)
+    # 注意: launch文件会通过remappings设置实际的话题映射
+    # rgb/image <- /camera/color/image_raw
+    # depth/image <- /camera/aligned_depth_to_color/image_raw
+    # rgb/camera_info <- /camera/color/camera_info
+    # scan_cloud <- /livox/lidar
+    # odom <- /odom
+    # imu <- /livox/imu (如果有MID360)
+
+    # 队列大小
+    queue_size: 30                       # 增大以处理多传感器
+    sync_queue_size: 30
+    topic_queue_size: 10
+
+    # 同步参数
+    approx_sync_max_interval: "0.02"     # 20ms同步容差
+
+    # QoS设置
+    qos: 1
+    qos_image: 1
+    qos_camera_info: 1
+    qos_scan: 1
+    qos_odom: 1
+    qos_imu: 1
+
+    # RTABMAP核心参数 - 融合优化
+    Rtabmap/DetectionRate: "1.0"
+    Rtabmap/CreateIntermediateNodes: "true"
+    Rtabmap/MaxRetrieved: "2"
+    Rtabmap/MemoryThr: "0"
+    Rtabmap/LoopThr: "0.11"
+    Rtabmap/LoopRatio: "0.7"
+
+    # 使用视觉+ICP融合注册
+    Reg/Strategy: "2"                    # 2=Visual+ICP
+    Reg/Force3DoF: "true"                # 地面机器人约束
+
+    # 视觉特征参数（RGB-D）
+    Vis/EstimationType: "1"              # 3D->2D (PnP)
+    Vis/FeatureType: "6"                 # GFTT/BRIEF
+    Vis/MaxFeatures: "800"               # 减少以平衡计算
+    Vis/MinInliers: "10"
+    Vis/InlierDistance: "0.1"
+    Vis/CorType: "0"
+    Vis/CorGuessWinSize: "20"
+    Vis/DepthAsMask: "true"
+    Vis/MinDepth: "0.3"
+    Vis/MaxDepth: "10.0"
+
+    # ICP参数（激光雷达）
+    Icp/Strategy: "1"                    # Point to plane
+    Icp/MaxCorrespondenceDistance: "0.1"
+    Icp/Iterations: "30"
+    Icp/VoxelSize: "0.075"              # 平衡精度和速度
+    Icp/Epsilon: "0.001"
+    Icp/PointToPlane: "true"
+    Icp/PointToPlaneK: "20"
+    Icp/PointToPlaneRadius: "0.3"
+    Icp/MaxTranslation: "2.0"
+    Icp/MaxRotation: "0.78"
+    Icp/OutlierRatio: "0.65"
+    Icp/CorrespondenceRatio: "0.2"
+
+    # 融合权重
+    Reg/VisualVariance: "0.01"          # 视觉协方差
+    Reg/ICPVariance: "0.005"            # ICP协方差（更信任激光雷达）
+
+    # RGB-D参数
+    RGBD/AngularUpdate: "0.01"
+    RGBD/LinearUpdate: "0.01"
+    RGBD/OptimizeFromGraphEnd: "false"
+    RGBD/OptimizeMaxError: "3.0"
+    RGBD/ProximityBySpace: "true"
+    RGBD/ProximityByTime: "false"
+    RGBD/ProximityMaxGraphDepth: "50"
+    RGBD/ProximityMaxPaths: "3"
+    RGBD/LocalRadius: "5.0"
+    RGBD/NeighborLinkRefining: "true"
+    RGBD/CreateOccupancyGrid: "true"
+
+    # 栅格地图生成 - 融合两种传感器
+    Grid/3D: "false"
+    Grid/RayTracing: "true"
+    Grid/RangeMin: "0.3"
+    Grid/RangeMax: "20.0"               # 使用激光雷达范围
+    Grid/CellSize: "0.05"
+    Grid/PreVoxelFiltering: "true"
+    Grid/MapFrameProjection: "false"
+    Grid/NormalsSegmentation: "true"
+    Grid/MaxGroundHeight: "0.05"
+    Grid/MaxObstacleHeight: "2.0"
+    Grid/MinClusterSize: "15"
+    Grid/FlatObstacleDetected: "true"
+    Grid/NoiseFilteringRadius: "0.1"
+    Grid/NoiseFilteringMinNeighbors: "5"
+    Grid/FromDepth: "false"              # 优先使用激光雷达
+    Grid/Sensor: "0"                     # 0=laser, 1=camera
+
+    # 传感器融合策略
+    Grid/DepthDecimation: "1"           # 不降采样深度图
+    Grid/DepthRoiRatios: "0.0 0.0 0.0 0.0"  # 使用完整深度图
+    Grid/FootprintHeight: "0.1"
+    Grid/FootprintLength: "0.5"
+    Grid/FootprintWidth: "0.3"
+
+    # 内存管理
+    Mem/RehearsalSimilarity: "0.45"
+    Mem/UseOdomFeatures: "true"
+    Mem/NotLinkedNodesKept: "false"
+    Mem/STMSize: "30"
+    Mem/IncrementalMemory: "true"
+    Mem/ImagePreDecimation: "1"
+    Mem/ImagePostDecimation: "1"
+    Mem/CompressionParallelized: "true"
+    Mem/BinDataKept: "true"             # 保留二进制数据
+
+    # 优化器
+    Optimizer/Strategy: "1"               # g2o
+    Optimizer/Iterations: "100"
+    Optimizer/Epsilon: "0.00001"
+    Optimizer/Robust: "true"             # 鲁棒优化
+    Optimizer/VarianceIgnored: "false"
+
+    # 里程计参数
+    Odom/Strategy: "0"                   # Frame-to-Map
+    Odom/ResetCountdown: "0"
+    Odom/Holonomic: "false"
+    Odom/FilteringStrategy: "0"
+    Odom/GuessMotion: "true"
+    Odom/KeyFrameThr: "0.3"
+    Odom/ScanKeyFrameThr: "0.9"
+    Odom/ImageDecimation: "1"
+
+    # 高级融合参数
+    Rtabmap/StartNewMapOnLoopClosure: "false"
+    Rtabmap/StartNewMapOnGoodSignature: "false"
+    Rtabmap/ImagesAlreadyRectified: "true"
+    Rtabmap/LoopGPS: "false"
+
+    # 发布选项
+    Rtabmap/PublishStats: "true"
+    Rtabmap/PublishLastSignature: "true"
+    Rtabmap/PublishPdf: "true"
+    Rtabmap/PublishLikelihood: "true"
+
+    # 调试选项
+    Rtabmap/TimeThr: "0"
+    Rtabmap/MemoryThr: "0"

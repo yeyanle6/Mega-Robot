@@ -1,0 +1,116 @@
+# RTABMAP配置 - 仅使用激光雷达模式
+# 优化用于Livox MID360点云SLAM
+
+rtabmap:
+  ros__parameters:
+    # 基础配置
+    frame_id: "base_link"  # 机器人base frame，确保TF树正确
+    odom_frame_id: "icp_odom"  # 匹配icp_odometry
+    map_frame_id: "map"
+    publish_tf: true
+    tf_delay: 0.02
+    use_sim_time: false
+
+    # 订阅配置 - 仅激光雷达
+    subscribe_depth: false
+    subscribe_rgb: false
+    subscribe_scan: false
+    subscribe_scan_cloud: true
+    subscribe_stereo: false
+    subscribe_rgbd: false
+    subscribe_odom_info: true  # 必须订阅odom信息
+    approx_sync: false
+
+    # 话题配置 (由launch文件的remappings管理，此处不设置)
+    # 注意: launch文件会通过remappings设置实际的话题映射
+    # scan_cloud <- /livox/lidar
+    # odom <- icp_odom (lidar_only模式)
+    # imu <- /livox/imu
+
+    # 队列大小
+    queue_size: 10
+    sync_queue_size: 10
+
+    # QoS设置
+    qos: 1
+    qos_scan: 1
+    qos_odom: 1
+    qos_imu: 1
+
+    # 点云可视化配置 - 关键！
+    cloud_voxel_size: 0.05              # 点云下采样体素大小（米）
+    cloud_max_depth: 10.0               # 最大显示深度
+    cloud_min_depth: 0.5                # 最小显示深度
+
+    # RTABMAP核心参数 - 针对激光雷达优化
+    Rtabmap/DetectionRate: "1.0"
+    Rtabmap/CreateIntermediateNodes: "true"
+    Rtabmap/MaxRetrieved: "2"
+    Rtabmap/MemoryThr: "0"
+    Rtabmap/LoopThr: "0.11"
+
+    # 使用ICP进行注册（激光雷达）
+    Reg/Strategy: "1"                    # 1=ICP
+    Reg/Force3DoF: "true"                # 地面机器人约束
+
+    # ICP参数 - 针对MID360优化
+    Icp/Strategy: "1"                    # Point to plane
+    Icp/MaxCorrespondenceDistance: "0.15"
+    Icp/Iterations: "30"
+    Icp/VoxelSize: "0.1"                # 较大体素用于快速处理
+    Icp/Epsilon: "0.001"
+    Icp/PointToPlane: "true"
+    Icp/PointToPlaneK: "20"
+    Icp/PointToPlaneRadius: "0.5"
+    Icp/MaxTranslation: "2.0"
+    Icp/MaxRotation: "0.78"
+    Icp/OutlierRatio: "0.65"
+    Icp/CorrespondenceRatio: "0.1"
+
+    # 仅使用激光雷达特征
+    Vis/EstimationType: "1"              # 禁用视觉
+    Vis/MaxFeatures: "0"                 # 不使用视觉特征
+
+    # 栅格地图生成 - 从激光雷达
+    Grid/3D: "false"
+    Grid/RayTracing: "true"
+    Grid/RangeMin: "0.3"
+    Grid/RangeMax: "30.0"               # MID360范围
+    Grid/CellSize: "0.05"
+    Grid/PreVoxelFiltering: "true"
+    Grid/MapFrameProjection: "false"
+    Grid/NormalsSegmentation: "true"     # 分割地面/障碍物
+    Grid/MaxGroundHeight: "0.1"
+    Grid/MaxObstacleHeight: "2.0"
+    Grid/MinClusterSize: "20"
+    Grid/FlatObstacleDetected: "true"
+    Grid/NoiseFilteringRadius: "0.1"
+    Grid/NoiseFilteringMinNeighbors: "5"
+    Grid/FromDepth: "false"              # 使用点云而非深度图
+
+    # 内存管理
+    Mem/RehearsalSimilarity: "0.45"
+    Mem/UseOdomFeatures: "false"
+    Mem/NotLinkedNodesKept: "false"
+    Mem/STMSize: "30"
+    Mem/IncrementalMemory: "true"
+
+    # 优化器
+    Optimizer/Strategy: "1"               # g2o
+    Optimizer/Iterations: "100"
+    Optimizer/Epsilon: "0.00001"
+    Optimizer/Robust: "true"             # 鲁棒优化
+
+    # 里程计参数
+    Odom/Strategy: "1"                   # Frame-to-Frame
+    Odom/ResetCountdown: "0"
+    Odom/Holonomic: "false"
+    Odom/FilteringStrategy: "0"
+    Odom/GuessMotion: "true"
+    Odom/ScanKeyFrameThr: "0.9"
+
+    # 发布选项
+    Rtabmap/PublishStats: "true"
+    Rtabmap/PublishLastSignature: "false"
+    Rtabmap/PublishPdf: "false"
+    Rtabmap/PublishLikelihood: "false"
