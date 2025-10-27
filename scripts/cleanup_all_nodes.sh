@@ -70,6 +70,7 @@ cleanup_process "cartographer_occupancy_grid_node"
 echo ""
 echo "步骤4: 清理传感器驱动节点..."
 cleanup_process "livox_ros_driver2_node"
+cleanup_process "livox_lidar_publisher"
 cleanup_process "realsense2_camera_node"
 cleanup_process "pointcloud_to_laserscan_node"
 
@@ -78,12 +79,16 @@ echo "步骤5: 清理机器人底盘节点..."
 cleanup_process "micro_ros_agent"
 cleanup_process "pub_odom"
 cleanup_process "robot_state_publisher"
+cleanup_process "robot_state_publisher_node"
+cleanup_process "joint_state_publisher"
+cleanup_process "mid360_imu_broadcaster"
 
 echo ""
 echo "步骤6: 清理自定义节点..."
 cleanup_process "odometry_fusion"
 cleanup_process "sensor_detector"
 cleanup_process "health_monitor"
+cleanup_process "megarover"
 
 echo ""
 echo "步骤7: 清理可视化和工具..."
@@ -105,7 +110,23 @@ pkill -9 -f "sensor_detector.py" 2>/dev/null || true
 pkill -9 -f "health_monitor.py" 2>/dev/null || true
 
 echo ""
-echo "步骤10: 等待进程完全退出..."
+echo "步骤10: 强制清理所有ROS2相关进程..."
+# 通过命令行特征杀掉所有ROS2节点
+pkill -9 -f "ros2 run" 2>/dev/null || true
+pkill -9 -f "ros2 launch" 2>/dev/null || true
+pkill -9 -f "__node:=" 2>/dev/null || true
+pkill -9 -f "megarover_navigation" 2>/dev/null || true
+pkill -9 -f "joint_state_publisher" 2>/dev/null || true
+pkill -9 -f "robot_state_publisher" 2>/dev/null || true
+pkill -9 -f "/opt/ros/humble/lib" 2>/dev/null || true
+
+echo ""
+echo "步骤11: 终极清理 - 杀掉所有Python ROS节点..."
+# 杀掉所有运行ROS节点的Python进程
+ps aux | grep python3 | grep -E "joint_state|robot_state|odometry|sensor|health|livox|megarover" | grep -v grep | awk '{print $2}' | xargs -r kill -9 2>/dev/null || true
+
+echo ""
+echo "步骤12: 等待进程完全退出..."
 sleep 1
 
 # 验证清理效果
