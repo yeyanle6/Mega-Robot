@@ -140,7 +140,7 @@ local_costmap:
       obstacle_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true
-        voxel_decay: 5.0             # 障碍物更快消失，降低清图等待时间
+        voxel_decay: 2.0             # 障碍物更快消失，降低清图等待时间 (was 5.0)
         decay_model: 0               # 0=线性衰减
         voxel_size: 0.05
         track_unknown_space: true
@@ -212,7 +212,7 @@ global_costmap:
       obstacle_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true
-        voxel_decay: 30.0            # global 30 秒后消失 (GitHub推荐 global: 15-45s)
+        voxel_decay: 5.0             # global 5 秒后消失 (was 30.0)
         decay_model: 0               # 0=线性衰减
         voxel_size: 0.05
         track_unknown_space: true
