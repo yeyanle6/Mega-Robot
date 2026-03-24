@@ -1,0 +1,9 @@
+free_thresh: 0.196
+image: test_pgo_map.pgm
+negate: 0
+occupied_thresh: 0.65
+origin:
+- -5.9999998092651365
+- -10.900000381469727
+- 0.0
+resolution: 0.10000000149011612

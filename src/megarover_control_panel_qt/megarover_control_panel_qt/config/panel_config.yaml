@@ -1,0 +1,50 @@
+components:
+  chassis:
+    name: "底盘 (Micro-ROS)"
+    command: "ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 --baudrate 115200 -v4"
+    dependencies: []
+    check_topics: ["/rover_twist", "/rover_odo"]
+
+  lidar:
+    name: "MID360 激光雷达"
+    command: "ros2 launch livox_ros_driver2 msg_MID360_launch.py"
+    dependencies: []
+    check_topics: ["/livox/lidar", "/livox/imu"]
+
+  d455_front:
+    name: "D455 前方相机"
+    command: "bash /home/ros/Code/Demo8/start_d455_front.sh"
+    dependencies: []
+    check_topics: ["/camera/d455_front/depth/color/points"]
+
+  slam:
+    name: "SLAM (建图-简单)"
+    command: "ros2 launch megarover3_navigation fastlio2_navigation.launch.py mode:=slam"
+    dependencies: ["chassis", "lidar"]
+    check_nodes: ["/fastlio2_lio", "/patchworkpp_node"]
+
+  slam_pgo:
+    name: "SLAM (建图-PGO优化)"
+    command: "ros2 launch megarover3_navigation fastlio2_pgo_navigation.launch.py mode:=slam start_lidar:=false"
+    dependencies: ["chassis", "lidar"]
+    check_nodes: ["/fastlio2/fastlio2_lio", "/pgo/pgo_node", "/patchworkpp_node"]
+
+  navigation:
+    name: "导航 (简单)"
+    command: "ros2 launch megarover3_navigation fastlio2_navigation.launch.py mode:=nav map:={map_path}"
+    dependencies: ["chassis", "lidar"]
+    params:
+      map_path: ""
+
+  navigation_pgo:
+    name: "导航 (PGO地图)"
+    command: "ros2 launch megarover3_navigation fastlio2_pgo_navigation.launch.py mode:=nav map:={map_path} pcd_map:={pcd_path} start_lidar:=false"
+    dependencies: ["chassis", "lidar"]
+    params:
+      map_path: ""
+      pcd_path: ""
+
+  teleop:
+    name: "键盘遥控"
+    command: "ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=rover_twist"
+    dependencies: ["chassis"]

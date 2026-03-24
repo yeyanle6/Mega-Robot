@@ -1,0 +1,55 @@
+# OctoMap Server配置 - MegaRover3
+# 用于将FASTLIO2的3D点云转换为3D体素地图，并提取2D占用栅格地图
+# 
+# ROS2参数格式：使用ros__parameters命名空间
+
+octomap_server:
+  ros__parameters:
+    # 基础配置
+    frame_id: "odom"              # OctoMap的世界坐标系（与FASTLIO2的world_frame一致）
+    base_frame_id: "base_link"    # 机器人基座坐标系（用于TF查询sensor origin）
+    resolution: 0.05              # 体素分辨率 (5cm)
+    max_depth: 16                 # OctoMap最大深度（影响内存使用）
+    
+    # 点云处理
+    pointcloud_min_z: -0.5         # 最小高度过滤 (m) - 过滤地面以下
+    pointcloud_max_z: 1.4          # 最大高度过滤 (m) - 过滤过高物体
+    max_range: 30.0                # 最大传感器范围 (m) - 与FASTLIO2的lidar_max_range一致
+    
+    # 传感器模型
+    sensor_model_type: "ray"       # "ray"（射线模型）或 "endpoint"（端点模型）
+    sensor_model_max_range: 30.0   # 传感器最大范围 (m)
+    
+    # 2D地图高度切片配置
+    occupancy_min_z: 0.0           # 2D地图最小高度 (m) - 显示所有高度的障碍物
+    occupancy_max_z: 1.4           # 2D地图最大高度 (m)
+    # 注意：occupancy_min_z ~ occupancy_max_z 范围内的体素会被投影到XY平面
+    
+    # 概率阈值（占用/自由/未知）
+    prob_hit: 0.7                  # 命中概率（点云击中体素）
+    prob_miss: 0.4                 # 未命中概率（射线穿过体素）
+    clamping_thresh_min: 0.1192    # 最小概率阈值（低于此值视为未知）
+    clamping_thresh_max: 0.971     # 最大概率阈值（高于此值视为占用）
+    
+    # 2D地图配置
+    publish_2d_map: true           # 是否发布2D占用栅格地图
+    map_2d_resolution: 0.05        # 2D地图分辨率 (m) - 与体素分辨率一致
+    map_2d_height_slice: 0.0       # 2D地图高度切片中心 (m) - 相对于occupancy_min_z
+    map_2d_height_slice_thickness: 1.5  # 2D地图高度切片厚度 (m)
+    
+    # 发布频率
+    publish_3d_map_rate: 1.0       # 3D OctoMap发布频率 (Hz)
+    publish_2d_map_rate: 1.0       # 2D地图发布频率 (Hz)
+    
+    # 其他配置
+    track_unknown_space: true      # 跟踪未知空间（推荐开启）
+    latch: false                   # 是否锁定话题（false表示实时更新）
+    
+    # 地面过滤（ROS2 octomap_server参数）
+    # 注意: 已由Patchwork++进行智能地面分割，此处关闭OctoMap内置过滤
+    filter_ground_plane: false     # 关闭内置地面过滤 (由Patchwork++处理)
+    ground_filter:
+      distance: 0.1                # 点到地面平面的距离阈值 (m)
+      angle: 0.3                   # 地面法向量与Z轴的最大夹角 (rad) - 约17度
+      plane_distance: 0.1          # 地面平面拟合距离阈值 (m)
+

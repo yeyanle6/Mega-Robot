@@ -1,0 +1,47 @@
+# Colcon build artifacts
+build/
+install/
+log/
+
+# ROS logs
+.ros_logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Point cloud maps (large binary files)
+*.pcd
+
+# Backup archives
+*.zip
+
+# Generated images/docs at root
+*.pdf
+*.png
+
+# Claude / OMC state
+.claude/
+.omc/
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Vendor reference (not part of active build)
+megarover_v30_6_0/
+
+# Large binary / generated files
+*.onnx
+*.pt
+*.gif
+*.dae
+*.db3
+
+# Test results (generated data)
+test_results/
+bumper_test/

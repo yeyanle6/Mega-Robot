@@ -1,0 +1,91 @@
+/* MegaRover3 Control Panel Stylesheet */
+
+/* Main Window */
+QMainWindow {
+    background-color: #2C3E50;
+}
+
+/* General Widget Styles */
+QWidget {
+    background-color: #34495E;
+    color: #ECF0F1;
+    font-family: "Ubuntu", "Segoe UI", sans-serif;
+}
+
+/* Labels */
+QLabel {
+    color: #ECF0F1;
+    border: none;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 11pt;
+}
+
+QPushButton:hover {
+    background-color: #2980B9;
+}
+
+QPushButton:pressed {
+    background-color: #21618C;
+}
+
+QPushButton:disabled {
+    background-color: #7F8C8D;
+    color: #BDC3C7;
+}
+
+/* Text Edit (Log Viewer) */
+QTextEdit {
+    background-color: #1E1E1E;
+    color: #D4D4D4;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 10pt;
+    border: 1px solid #3E3E3E;
+    border-radius: 3px;
+}
+
+/* Scroll Bars */
+QScrollBar:vertical {
+    background: #2C3E50;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #7F8C8D;
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #95A5A6;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* Splitter */
+QSplitter::handle {
+    background-color: #2C3E50;
+    width: 2px;
+}
+
+QSplitter::handle:hover {
+    background-color: #3498DB;
+}
+
+/* Frame Separators */
+QFrame[frameShape="4"] { /* HLine */
+    color: #7F8C8D;
+    margin: 5px 0px;
+}
